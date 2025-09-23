@@ -592,4 +592,369 @@
 
         // Dibujar historial de trayectorias
         function drawTrajectoryHistory() {
-            cannonGame.trajectoryHistory.forEach((trajecto
+            cannonGame.trajectoryHistory.forEach((trajectory, index) => {
+                if (trajectory.length > 1) {
+                    const alpha = Math.max(0.2, 1 - (index / cannonGame.trajectoryHistory.length) * 0.8);
+                    cannonGame.ctx.strokeStyle = `rgba(255, 165, 0, ${alpha})`;
+                    cannonGame.ctx.lineWidth = 2;
+                    cannonGame.ctx.setLineDash([5, 5]);
+                    cannonGame.ctx.beginPath();
+                    trajectory.forEach((point, pointIndex) => {
+                        if (pointIndex === 0) {
+                            cannonGame.ctx.moveTo(point.x, point.y);
+                        } else {
+                            cannonGame.ctx.lineTo(point.x, point.y);
+                        }
+                    });
+                    cannonGame.ctx.stroke();
+                    cannonGame.ctx.setLineDash([]);
+                }
+            });
+        }
+
+        // Dibujar predicción de trayectoria
+        function drawTrajectoryPrediction() {
+            if (cannonGame.predictedTrajectory.length > 1) {
+                cannonGame.ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
+                cannonGame.ctx.lineWidth = 3;
+                cannonGame.ctx.setLineDash([10, 10]);
+                cannonGame.ctx.beginPath();
+                cannonGame.predictedTrajectory.forEach((point, index) => {
+                    if (index === 0) {
+                        cannonGame.ctx.moveTo(point.x, point.y);
+                    } else {
+                        cannonGame.ctx.lineTo(point.x, point.y);
+                    }
+                });
+                cannonGame.ctx.stroke();
+                cannonGame.ctx.setLineDash([]);
+
+                // Dibujar puntos de impacto predichos
+                cannonGame.ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+                const lastPoint = cannonGame.predictedTrajectory[cannonGame.predictedTrajectory.length - 1];
+                cannonGame.ctx.beginPath();
+                cannonGame.ctx.arc(lastPoint.x, lastPoint.y, 8, 0, Math.PI * 2);
+                cannonGame.ctx.fill();
+            }
+        }
+
+        // Dibujar cañón
+        function drawCannon() {
+            const angle = document.getElementById('cannonAngle').value;
+            const angleRad = -(angle * Math.PI) / 180;
+            
+            cannonGame.ctx.save();
+            
+            // Sombra del cañón
+            cannonGame.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX + 3, cannonGame.cannonY + 3, 25, 0, Math.PI * 2);
+            cannonGame.ctx.fill();
+            
+            // Base del cañón
+            cannonGame.ctx.fillStyle = '#2c3e50';
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX, cannonGame.cannonY, 25, 0, Math.PI * 2);
+            cannonGame.ctx.fill();
+            
+            // Barril del cañón
+            cannonGame.ctx.translate(cannonGame.cannonX, cannonGame.cannonY);
+            cannonGame.ctx.rotate(angleRad);
+            
+            cannonGame.ctx.fillStyle = '#34495e';
+            cannonGame.ctx.fillRect(0, -8, 40, 16);
+            
+            // Punta del barril
+            cannonGame.ctx.fillStyle = '#2c3e50';
+            cannonGame.ctx.fillRect(35, -10, 8, 20);
+            
+            cannonGame.ctx.restore();
+            
+            // Ruedas del cañón
+            cannonGame.ctx.fillStyle = '#7f8c8d';
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX - 20, cannonGame.cannonY + 20, 12, 0, Math.PI * 2);
+            cannonGame.ctx.fill();
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX + 20, cannonGame.cannonY + 20, 12, 0, Math.PI * 2);
+            cannonGame.ctx.fill();
+            
+            // Detalles de las ruedas
+            cannonGame.ctx.strokeStyle = '#5d6d7e';
+            cannonGame.ctx.lineWidth = 2;
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX - 20, cannonGame.cannonY + 20, 8, 0, Math.PI * 2);
+            cannonGame.ctx.stroke();
+            cannonGame.ctx.beginPath();
+            cannonGame.ctx.arc(cannonGame.cannonX + 20, cannonGame.cannonY + 20, 8, 0, Math.PI * 2);
+            cannonGame.ctx.stroke();
+        }
+
+        // Dibujar blancos
+        function drawTargets() {
+            cannonGame.targets.forEach(target => {
+                if (!target.destroyed) {
+                    // Sombra del blanco
+                    cannonGame.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                    cannonGame.ctx.fillRect(target.x + 3, target.y + target.height + 3, target.width, 8);
+                    
+                    // Blanco principal
+                    cannonGame.ctx.fillStyle = '#e74c3c';
+                    cannonGame.ctx.fillRect(target.x, target.y, target.width, target.height);
+                    
+                    // Borde del blanco
+                    cannonGame.ctx.strokeStyle = '#c0392b';
+                    cannonGame.ctx.lineWidth = 3;
+                    cannonGame.ctx.strokeRect(target.x, target.y, target.width, target.height);
+                    
+                    // Diana central
+                    cannonGame.ctx.fillStyle = 'white';
+                    cannonGame.ctx.beginPath();
+                    cannonGame.ctx.arc(target.x + target.width/2, target.y + target.height/2, Math.min(target.width, target.height)/4, 0, Math.PI * 2);
+                    cannonGame.ctx.fill();
+                    
+                    cannonGame.ctx.fillStyle = '#c0392b';
+                    cannonGame.ctx.beginPath();
+                    cannonGame.ctx.arc(target.x + target.width/2, target.y + target.height/2, Math.min(target.width, target.height)/6, 0, Math.PI * 2);
+                    cannonGame.ctx.fill();
+                }
+            });
+        }
+
+        // Actualizar proyectiles
+        function updateProjectiles() {
+            cannonGame.projectiles = cannonGame.projectiles.filter(projectile => {
+                // Actualizar posición
+                projectile.x += projectile.vx;
+                projectile.y += projectile.vy;
+                projectile.vy += projectile.gravity;
+                
+                // Agregar punto al rastro y trayectoria completa
+                projectile.trail.push({x: projectile.x, y: projectile.y});
+                projectile.fullTrajectory.push({x: projectile.x, y: projectile.y});
+                
+                if (projectile.trail.length > 20) {
+                    projectile.trail.shift();
+                }
+                
+                // Dibujar rastro mejorado
+                if (projectile.trail.length > 1) {
+                    cannonGame.ctx.lineWidth = 6;
+                    cannonGame.ctx.lineCap = 'round';
+                    
+                    // Rastro con degradado
+                    for (let i = 1; i < projectile.trail.length; i++) {
+                        const alpha = i / projectile.trail.length;
+                        cannonGame.ctx.strokeStyle = `rgba(255, 215, 0, ${alpha * 0.8})`;
+                        cannonGame.ctx.lineWidth = 4 * alpha;
+                        cannonGame.ctx.beginPath();
+                        cannonGame.ctx.moveTo(projectile.trail[i-1].x, projectile.trail[i-1].y);
+                        cannonGame.ctx.lineTo(projectile.trail[i].x, projectile.trail[i].y);
+                        cannonGame.ctx.stroke();
+                    }
+                }
+                
+                // Dibujar proyectil con efectos mejorados
+                cannonGame.ctx.save();
+                cannonGame.ctx.shadowColor = '#f39c12';
+                cannonGame.ctx.shadowBlur = 10;
+                cannonGame.ctx.fillStyle = '#f39c12';
+                cannonGame.ctx.beginPath();
+                cannonGame.ctx.arc(projectile.x, projectile.y, 8, 0, Math.PI * 2);
+                cannonGame.ctx.fill();
+                
+                // Brillo del proyectil
+                cannonGame.ctx.fillStyle = '#f1c40f';
+                cannonGame.ctx.beginPath();
+                cannonGame.ctx.arc(projectile.x - 3, projectile.y - 3, 4, 0, Math.PI * 2);
+                cannonGame.ctx.fill();
+                cannonGame.ctx.restore();
+                
+                // Comprobar colisión con blancos
+                let hit = false;
+                cannonGame.targets.forEach(target => {
+                    if (!target.destroyed &&
+                        projectile.x >= target.x && projectile.x <= target.x + target.width &&
+                        projectile.y >= target.y && projectile.y <= target.y + target.height) {
+                        
+                        target.destroyed = true;
+                        cannonGame.score++;
+                        createExplosion(target.x + target.width/2, target.y + target.height/2, 60);
+                        
+                        // Agregar trayectoria al historial
+                        cannonGame.trajectoryHistory.push([...projectile.fullTrajectory]);
+                        
+                        updateStats();
+                        checkGameComplete();
+                        hit = true;
+                    }
+                });
+                
+                // Eliminar si toca el suelo o sale de pantalla
+                if (projectile.y >= 380 || projectile.x > cannonGame.canvas.width || projectile.x < 0 || hit) {
+                    if (projectile.y >= 380 && !hit) {
+                        createExplosion(projectile.x, 380, 30);
+                        // Agregar trayectoria fallida al historial
+                        cannonGame.trajectoryHistory.push([...projectile.fullTrajectory]);
+                    }
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+
+        // Actualizar explosiones
+        function updateExplosions() {
+            cannonGame.explosions = cannonGame.explosions.filter(explosion => {
+                explosion.life--;
+                explosion.radius = (1 - explosion.life / 40) * explosion.maxRadius;
+                explosion.alpha = explosion.life / 40;
+                
+                if (explosion.alpha > 0) {
+                    // Crear gradiente radial para la explosión
+                    const gradient = cannonGame.ctx.createRadialGradient(
+                        explosion.x, explosion.y, 0,
+                        explosion.x, explosion.y, explosion.radius
+                    );
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${explosion.alpha})`);
+                    gradient.addColorStop(0.3, `rgba(255, 215, 0, ${explosion.alpha * 0.8})`);
+                    gradient.addColorStop(0.6, `rgba(255, 69, 0, ${explosion.alpha * 0.6})`);
+                    gradient.addColorStop(1, `rgba(139, 0, 0, ${explosion.alpha * 0.2})`);
+                    
+                    cannonGame.ctx.fillStyle = gradient;
+                    cannonGame.ctx.beginPath();
+                    cannonGame.ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+                    cannonGame.ctx.fill();
+                    
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        // Actualizar partículas
+        function updateParticles() {
+            cannonGame.particles = cannonGame.particles.filter(particle => {
+                particle.life--;
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += 0.1; // Gravedad ligera
+                
+                const alpha = particle.life / particle.maxLife;
+                if (alpha > 0) {
+                    cannonGame.ctx.fillStyle = particle.color;
+                    cannonGame.ctx.globalAlpha = alpha;
+                    cannonGame.ctx.beginPath();
+                    cannonGame.ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+                    cannonGame.ctx.fill();
+                    cannonGame.ctx.globalAlpha = 1;
+                    
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('cannonScore').textContent = cannonGame.score;
+            document.getElementById('shotsCount').textContent = cannonGame.shots;
+            
+            const accuracy = cannonGame.shots > 0 ? Math.round((cannonGame.score / cannonGame.shots) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            
+            const remainingTargets = cannonGame.targets.filter(target => !target.destroyed).length;
+            document.getElementById('targetsLeft').textContent = remainingTargets;
+        }
+
+        // Verificar si el juego está completo
+        function checkGameComplete() {
+            const remainingTargets = cannonGame.targets.filter(target => !target.destroyed).length;
+            if (remainingTargets === 0) {
+                setTimeout(() => {
+                    showGameOver();
+                }, 1000);
+            }
+        }
+
+        // Mostrar pantalla de victoria
+        function showGameOver() {
+            document.getElementById('finalShots').textContent = cannonGame.shots;
+            document.getElementById('finalAccuracy').textContent = 
+                cannonGame.shots > 0 ? Math.round((cannonGame.score / cannonGame.shots) * 100) + '%' : '0%';
+            document.getElementById('gameOver').style.display = 'flex';
+        }
+
+        // Cerrar pantalla de victoria
+        function closeGameOver() {
+            document.getElementById('gameOver').style.display = 'none';
+            resetCannon();
+        }
+
+        // Reiniciar juego
+        function resetCannon() {
+            if (cannonGame.animationId) {
+                cancelAnimationFrame(cannonGame.animationId);
+            }
+            initCannon();
+        }
+
+        // Inicializar cuando la página cargue
+        window.addEventListener('load', () => {
+            initCannon();
+        });
+
+        // Manejar redimensionado de ventana
+        window.addEventListener('resize', () => {
+            // Reajustar canvas si es necesario
+            const canvas = cannonGame.canvas;
+            if (canvas && window.innerWidth < 800) {
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+            }
+        });
+
+        // Controles de teclado para mayor interactividad
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'ArrowUp':
+                    adjustAngle(1);
+                    event.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    adjustAngle(-1);
+                    event.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                    adjustPower(-2);
+                    event.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    adjustPower(2);
+                    event.preventDefault();
+                    break;
+                case ' ':
+                    fireCannon();
+                    event.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    resetCannon();
+                    event.preventDefault();
+                    break;
+                case 'p':
+                case 'P':
+                    toggleTrajectoryPrediction();
+                    event.preventDefault();
+                    break;
+                case 'c':
+                case 'C':
+                    clearTrajectories();
+                    event.preventDefault();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
