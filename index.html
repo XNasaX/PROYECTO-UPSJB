@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Tiro Parabólico - Cañón de Guerra</title>
+    <title>Simulador de Tiro Parabólico - Prototipo Educativo</title>
     <style>
         * {
             margin: 0;
@@ -12,47 +12,60 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
+        .game-container {
+            max-width: 1400px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .main-game {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel h3 {
+            color: #2d3436;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #74b9ff;
+            padding-bottom: 5px;
         }
 
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-panel {
-            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0 20px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .info-panel strong {
-            color: #2d3436;
+            margin-bottom: 20px;
+            font-size: 2em;
         }
 
         .game-canvas {
             border: 3px solid #333;
             border-radius: 10px;
             display: block;
-            margin: 20px auto;
+            margin: 10px auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             background: #87CEEB;
         }
@@ -62,81 +75,50 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
-            margin: 20px 0;
+            gap: 15px;
+            margin: 15px 0;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            min-width: 140px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            min-width: 120px;
         }
 
         .control-group label {
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #333;
+            font-size: 0.9em;
         }
 
         .control-group input[type="range"] {
-            width: 100px;
-            margin-bottom: 8px;
+            width: 80px;
+            margin-bottom: 5px;
         }
 
         .control-group span {
             font-weight: bold;
             color: #e74c3c;
-        }
-
-        .manual-controls {
-            display: flex;
-            gap: 8px;
-            margin: 8px 0;
-            align-items: center;
-        }
-
-        .manual-button {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            background: linear-gradient(45deg, #74b9ff, #0984e3);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .manual-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.4);
-        }
-
-        .manual-button:active {
-            transform: scale(0.95);
+            font-size: 0.9em;
         }
 
         .action-button {
-            padding: 15px 30px;
+            padding: 10px 20px;
             background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin: 5px;
+            margin: 3px;
         }
 
         .action-button:hover {
@@ -144,195 +126,258 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .action-button:active {
-            transform: translateY(0);
-        }
-
         .reset-button {
             background: linear-gradient(45deg, #74b9ff, #0984e3);
         }
 
-        .trajectory-button {
-            background: linear-gradient(45deg, #00b894, #00a085);
-            font-size: 14px;
-            padding: 10px 20px;
+        .physics-display {
+            font-size: 0.85em;
+            line-height: 1.4;
         }
 
-        .score-panel {
+        .physics-item {
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+            justify-content: space-between;
+            margin: 3px 0;
+            padding: 2px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .physics-item:last-child {
+            border-bottom: none;
+        }
+
+        .value {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        .mission-active {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            color: white;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .score-item {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 6px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .score-value {
-            font-size: 24px;
+            font-size: 1.2em;
             font-weight: bold;
             color: #e74c3c;
             display: block;
         }
 
         .score-label {
-            font-size: 14px;
+            font-size: 0.8em;
             color: #666;
-            margin-top: 5px;
         }
 
-        .game-over {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        .trajectory-analysis {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.8em;
         }
 
-        .game-over-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        .analysis-item {
+            background: rgba(116, 185, 255, 0.1);
+            padding: 5px;
+            margin: 3px 0;
+            border-radius: 4px;
+            border-left: 3px solid #74b9ff;
         }
 
-        .victory-text {
-            font-size: 2em;
-            color: #00b894;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .trajectory-info {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
+        .mode-selector {
+            display: flex;
+            gap: 5px;
             margin: 10px 0;
-            text-align: center;
-            font-size: 14px;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            background: #ddd;
+            transition: all 0.2s;
+        }
+
+        .mode-button.active {
+            background: #74b9ff;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .panel {
+                min-width: 250px;
+            }
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
             .game-canvas {
                 width: 100%;
-                max-width: 800px;
+                max-width: 100%;
                 height: auto;
             }
-
+            
             .controls {
-                gap: 15px;
+                gap: 10px;
             }
-
+            
             .control-group {
-                min-width: 120px;
-                padding: 10px;
-            }
-
-            .manual-button {
-                width: 25px;
-                height: 25px;
-                font-size: 14px;
+                min-width: 100px;
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 Simulador de Tiro Parabólico - Cañón de Guerra 💥</h1>
-        
-        <div class="info-panel">
-            <strong>🎮 Instrucciones:</strong> Ajusta el ángulo y la fuerza para destruir todos los blancos rojos. ¡Usa los controles manuales o deslizadores!
-        </div>
+    <div class="game-container">
+        <div class="main-game">
+            <h1>🎯 Simulador de Física - Tiro Parabólico</h1>
+            
+            <div class="mode-selector">
+                <button class="mode-button active" onclick="setGameMode('tutorial')">📚 Tutorial</button>
+                <button class="mode-button" onclick="setGameMode('practice')">🎯 Práctica</button>
+                <button class="mode-button" onclick="setGameMode('challenge')">⚡ Desafío</button>
+                <button class="mode-button" onclick="setGameMode('experiment')">🔬 Experimento</button>
+            </div>
 
-        <div class="trajectory-info">
-            <strong>📐 Trayectoria Predicha:</strong> <span id="trajectoryInfo">Ajusta los controles para ver la predicción</span>
-        </div>
-
-        <canvas id="cannonCanvas" class="game-canvas" width="800" height="400"></canvas>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label>Ángulo (°)</label>
-                <input type="range" id="cannonAngle" min="0" max="90" value="45">
-                <div class="manual-controls">
-                    <button class="manual-button" onclick="adjustAngle(-1)">-</button>
+            <canvas id="cannonCanvas" class="game-canvas" width="800" height="400"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Ángulo (°)</label>
+                    <input type="range" id="cannonAngle" min="0" max="90" value="45">
                     <span id="angleValue">45°</span>
-                    <button class="manual-button" onclick="adjustAngle(1)">+</button>
                 </div>
-            </div>
-            <div class="control-group">
-                <label>Fuerza</label>
-                <input type="range" id="cannonPower" min="20" max="100" value="60">
-                <div class="manual-controls">
-                    <button class="manual-button" onclick="adjustPower(-2)">-</button>
+                <div class="control-group">
+                    <label>Velocidad (m/s)</label>
+                    <input type="range" id="cannonPower" min="20" max="100" value="60">
                     <span id="powerValue">60</span>
-                    <button class="manual-button" onclick="adjustPower(2)">+</button>
+                </div>
+                <div class="control-group">
+                    <label>Gravedad (m/s²)</label>
+                    <input type="range" id="gravity" min="1" max="20" value="10">
+                    <span id="gravityValue">9.8</span>
+                </div>
+                <div class="control-group">
+                    <button class="action-button" onclick="fireCannon()">🚀 DISPARAR</button>
+                    <button class="action-button reset-button" onclick="resetGame()">🔄 RESET</button>
                 </div>
             </div>
-            <div class="control-group">
-                <button class="action-button" onclick="fireCannon()">🔥 DISPARAR</button>
-                <button class="action-button trajectory-button" onclick="toggleTrajectoryPrediction()">📏 PREDICCIÓN</button>
-            </div>
-            <div class="control-group">
-                <button class="action-button reset-button" onclick="resetCannon()">🔄 REINICIAR</button>
-                <button class="action-button reset-button" onclick="clearTrajectories()">🧹 LIMPIAR</button>
-            </div>
         </div>
 
-        <div class="score-panel">
-            <div class="score-item">
-                <span class="score-value" id="cannonScore">0</span>
-                <div class="score-label">Blancos Destruidos</div>
+        <div class="sidebar">
+            <div class="panel">
+                <h3>🔬 Física en Tiempo Real</h3>
+                <div class="physics-display" id="physicsDisplay">
+                    <div class="physics-item">
+                        <span>Velocidad inicial:</span>
+                        <span class="value" id="v0">0 m/s</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Componente Vx:</span>
+                        <span class="value" id="vx">0 m/s</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Componente Vy:</span>
+                        <span class="value" id="vy">0 m/s</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Tiempo de vuelo:</span>
+                        <span class="value" id="flightTime">0 s</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Altura máxima:</span>
+                        <span class="value" id="maxHeight">0 m</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Alcance teórico:</span>
+                        <span class="value" id="range">0 m</span>
+                    </div>
+                    <div class="physics-item">
+                        <span>Energía cinética:</span>
+                        <span class="value" id="kineticEnergy">0 J</span>
+                    </div>
+                </div>
             </div>
-            <div class="score-item">
-                <span class="score-value" id="shotsCount">0</span>
-                <div class="score-label">Disparos</div>
-            </div>
-            <div class="score-item">
-                <span class="score-value" id="accuracy">0%</span>
-                <div class="score-label">Precisión</div>
-            </div>
-            <div class="score-item">
-                <span class="score-value" id="targetsLeft">5</span>
-                <div class="score-label">Blancos Restantes</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="game-over" id="gameOver">
-        <div class="game-over-content">
-            <div class="victory-text">🎉 ¡FELICIDADES! 🎉</div>
-            <p>Has destruido todos los blancos</p>
-            <p>Disparos realizados: <span id="finalShots">0</span></p>
-            <p>Precisión final: <span id="finalAccuracy">0%</span></p>
-            <button class="action-button" onclick="closeGameOver()">Jugar de Nuevo</button>
+            <div class="panel">
+                <h3>🎯 Misión Actual</h3>
+                <div class="mission-card" id="currentMission">
+                    <strong>Tutorial:</strong><br>
+                    Aprende los controles básicos disparando al primer blanco
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="action-button" onclick="nextMission()">➡️ Siguiente</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>📊 Estadísticas</h3>
+                <div class="score-grid">
+                    <div class="score-item">
+                        <span class="score-value" id="score">0</span>
+                        <div class="score-label">Puntos</div>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-value" id="shots">0</span>
+                        <div class="score-label">Disparos</div>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-value" id="accuracy">0%</span>
+                        <div class="score-label">Precisión</div>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-value" id="level">1</span>
+                        <div class="score-label">Nivel</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>📈 Análisis de Tiros</h3>
+                <div class="trajectory-analysis" id="trajectoryAnalysis">
+                    <div style="text-align: center; color: #666; font-style: italic;">
+                        Los análisis de tus disparos aparecerán aquí
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Variables globales del juego
-        let cannonGame = {
+        // Variables globales del juego mejorado
+        let game = {
             canvas: null,
             ctx: null,
             cannonX: 50,
@@ -341,461 +386,423 @@
             projectiles: [],
             explosions: [],
             particles: [],
-            trajectoryHistory: [], // Nuevo: historial de trayectorias
-            predictedTrajectory: [], // Nuevo: trayectoria predicha
-            showPrediction: false, // Nuevo: mostrar predicción
+            trajectoryHistory: [],
+            predictedTrajectory: [],
             score: 0,
             shots: 0,
-            animationId: null
+            level: 1,
+            gameMode: 'tutorial',
+            currentMission: 0,
+            missions: [
+                { type: 'tutorial', description: 'Dispara al primer blanco para aprender', target: 1, reward: 100 },
+                { type: 'precision', description: 'Destruye 3 blancos con máximo 5 disparos', target: 3, maxShots: 5, reward: 300 },
+                { type: 'physics', description: 'Usa solo ángulos entre 30-60°', target: 2, angleMin: 30, angleMax: 60, reward: 200 },
+                { type: 'efficiency', description: 'Máxima puntuación con mínimos disparos', target: 5, reward: 500 },
+                { type: 'experiment', description: 'Cambia la gravedad y destruye todos los blancos', target: 4, reward: 400 }
+            ],
+            physicsData: {
+                mass: 1, // kg
+                gravity: 9.8
+            }
         };
 
         // Inicializar el juego
-        function initCannon() {
-            cannonGame.canvas = document.getElementById('cannonCanvas');
-            cannonGame.ctx = cannonGame.canvas.getContext('2d');
+        function initGame() {
+            game.canvas = document.getElementById('cannonCanvas');
+            game.ctx = game.canvas.getContext('2d');
             
-            // Crear 5 blancos en posiciones aleatorias
-            cannonGame.targets = [];
-            for (let i = 0; i < 5; i++) {
-                cannonGame.targets.push({
-                    x: 400 + Math.random() * 350,
-                    y: 180 + Math.random() * 150,
-                    width: 30 + Math.random() * 20,
-                    height: 30 + Math.random() * 20,
-                    destroyed: false
+            createTargets();
+            resetStats();
+            updateControls();
+            updatePhysicsDisplay();
+            updateMissionDisplay();
+            animate();
+        }
+
+        // Crear blancos según el nivel
+        function createTargets() {
+            game.targets = [];
+            const numTargets = Math.min(3 + game.level, 8);
+            
+            for (let i = 0; i < numTargets; i++) {
+                game.targets.push({
+                    x: 300 + Math.random() * 450,
+                    y: 100 + Math.random() * 200,
+                    width: 25 + Math.random() * 15,
+                    height: 25 + Math.random() * 15,
+                    destroyed: false,
+                    value: 50 + Math.floor(Math.random() * 50)
                 });
             }
-            
-            // Limpiar arrays
-            cannonGame.projectiles = [];
-            cannonGame.explosions = [];
-            cannonGame.particles = [];
-            cannonGame.trajectoryHistory = [];
-            cannonGame.predictedTrajectory = [];
-            
-            // Resetear estadísticas
-            cannonGame.score = 0;
-            cannonGame.shots = 0;
-            
-            updateCannonControls();
-            updateStats();
-            calculateTrajectoryPrediction();
-            animateCannon();
         }
 
-        // Función para ajustar ángulo manualmente
-        function adjustAngle(change) {
-            const angleSlider = document.getElementById('cannonAngle');
-            let newValue = parseInt(angleSlider.value) + change;
-            newValue = Math.max(0, Math.min(90, newValue));
-            angleSlider.value = newValue;
-            updateCannonControls();
-            calculateTrajectoryPrediction();
-        }
-
-        // Función para ajustar potencia manualmente
-        function adjustPower(change) {
-            const powerSlider = document.getElementById('cannonPower');
-            let newValue = parseInt(powerSlider.value) + change;
-            newValue = Math.max(20, Math.min(100, newValue));
-            powerSlider.value = newValue;
-            updateCannonControls();
-            calculateTrajectoryPrediction();
-        }
-
-        // Calcular trayectoria predicha
-        function calculateTrajectoryPrediction() {
-            const angle = document.getElementById('cannonAngle').value;
-            const power = document.getElementById('cannonPower').value;
+        // Establecer modo de juego
+        function setGameMode(mode) {
+            game.gameMode = mode;
+            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
             
-            const angleRad = (angle * Math.PI) / 180;
-            const velocity = power * 0.3;
-            
-            cannonGame.predictedTrajectory = [];
-            
-            let x = cannonGame.cannonX + Math.cos(angleRad) * 40;
-            let y = cannonGame.cannonY - Math.sin(angleRad) * 40;
-            let vx = Math.cos(angleRad) * velocity;
-            let vy = -Math.sin(angleRad) * velocity;
-            const gravity = 0.2;
-            
-            // Simular trayectoria hasta que toque el suelo o salga de pantalla
-            for (let i = 0; i < 200; i++) {
-                cannonGame.predictedTrajectory.push({x: x, y: y});
-                x += vx;
-                y += vy;
-                vy += gravity;
-                
-                if (y >= 380 || x > cannonGame.canvas.width || x < 0) break;
+            switch(mode) {
+                case 'tutorial':
+                    game.currentMission = 0;
+                    break;
+                case 'challenge':
+                    game.currentMission = 1;
+                    break;
+                case 'experiment':
+                    document.getElementById('gravity').style.display = 'block';
+                    break;
             }
             
-            // Actualizar información de trayectoria
-            updateTrajectoryInfo(angle, power, vx, vy);
-        }
-
-        // Actualizar información de trayectoria
-        function updateTrajectoryInfo(angle, power, vx, vy) {
-            const velocity = Math.sqrt(vx*vx + vy*vy);
-            const maxHeight = (vy*vy) / (2 * 0.2);
-            const range = (2 * vx * Math.abs(vy)) / 0.2;
-            
-            document.getElementById('trajectoryInfo').innerHTML = 
-                `Ángulo: ${angle}° | Fuerza: ${power} | Velocidad: ${velocity.toFixed(1)} | Altura máx: ${maxHeight.toFixed(0)}px | Alcance: ${range.toFixed(0)}px`;
-        }
-
-        // Alternar predicción de trayectoria
-        function toggleTrajectoryPrediction() {
-            cannonGame.showPrediction = !cannonGame.showPrediction;
-            const button = event.target;
-            button.textContent = cannonGame.showPrediction ? '📏 OCULTAR' : '📏 PREDICCIÓN';
-        }
-
-        // Limpiar trayectorias históricas
-        function clearTrajectories() {
-            cannonGame.trajectoryHistory = [];
+            updateMissionDisplay();
+            resetGame();
         }
 
         // Actualizar controles
-        function updateCannonControls() {
+        function updateControls() {
             const angleSlider = document.getElementById('cannonAngle');
             const powerSlider = document.getElementById('cannonPower');
-            
-            document.getElementById('angleValue').textContent = angleSlider.value + '°';
-            document.getElementById('powerValue').textContent = powerSlider.value;
+            const gravitySlider = document.getElementById('gravity');
             
             angleSlider.oninput = () => {
                 document.getElementById('angleValue').textContent = angleSlider.value + '°';
+                updatePhysicsDisplay();
                 calculateTrajectoryPrediction();
             };
             
             powerSlider.oninput = () => {
                 document.getElementById('powerValue').textContent = powerSlider.value;
+                updatePhysicsDisplay();
+                calculateTrajectoryPrediction();
+            };
+            
+            gravitySlider.oninput = () => {
+                const gravity = parseFloat(gravitySlider.value);
+                game.physicsData.gravity = gravity;
+                document.getElementById('gravityValue').textContent = gravity.toFixed(1);
+                updatePhysicsDisplay();
                 calculateTrajectoryPrediction();
             };
         }
 
-        // Disparar cañón
-        function fireCannon() {
-            const angle = document.getElementById('cannonAngle').value;
-            const power = document.getElementById('cannonPower').value;
+        // Actualizar display de física
+        function updatePhysicsDisplay() {
+            const angle = parseFloat(document.getElementById('cannonAngle').value);
+            const power = parseFloat(document.getElementById('cannonPower').value);
+            const gravity = game.physicsData.gravity;
             
             const angleRad = (angle * Math.PI) / 180;
-            const velocity = power * 0.3;
+            const v0 = power;
+            const vx = v0 * Math.cos(angleRad);
+            const vy = v0 * Math.sin(angleRad);
             
-            // Crear proyectil con seguimiento de trayectoria mejorado
+            const flightTime = (2 * vy) / gravity;
+            const maxHeight = (vy * vy) / (2 * gravity);
+            const range = (v0 * v0 * Math.sin(2 * angleRad)) / gravity;
+            const kineticEnergy = 0.5 * game.physicsData.mass * v0 * v0;
+            
+            document.getElementById('v0').textContent = v0.toFixed(1) + ' m/s';
+            document.getElementById('vx').textContent = vx.toFixed(1) + ' m/s';
+            document.getElementById('vy').textContent = vy.toFixed(1) + ' m/s';
+            document.getElementById('flightTime').textContent = flightTime.toFixed(2) + ' s';
+            document.getElementById('maxHeight').textContent = maxHeight.toFixed(1) + ' m';
+            document.getElementById('range').textContent = range.toFixed(1) + ' m';
+            document.getElementById('kineticEnergy').textContent = kineticEnergy.toFixed(0) + ' J';
+        }
+
+        // Calcular trayectoria predicha
+        function calculateTrajectoryPrediction() {
+            const angle = parseFloat(document.getElementById('cannonAngle').value);
+            const power = parseFloat(document.getElementById('cannonPower').value);
+            
+            const angleRad = (angle * Math.PI) / 180;
+            const velocity = power * 0.4; // Escala para canvas
+            const gravity = game.physicsData.gravity * 0.02; // Escala para canvas
+            
+            game.predictedTrajectory = [];
+            
+            let x = game.cannonX + Math.cos(angleRad) * 40;
+            let y = game.cannonY - Math.sin(angleRad) * 40;
+            let vx = Math.cos(angleRad) * velocity;
+            let vy = -Math.sin(angleRad) * velocity;
+            
+            for (let i = 0; i < 300; i++) {
+                game.predictedTrajectory.push({x: x, y: y});
+                x += vx;
+                y += vy;
+                vy += gravity;
+                
+                if (y >= 380 || x > game.canvas.width || x < 0) break;
+            }
+        }
+
+        // Disparar cañón
+        function fireCannon() {
+            const angle = parseFloat(document.getElementById('cannonAngle').value);
+            const power = parseFloat(document.getElementById('cannonPower').value);
+            
+            // Verificar restricciones de misión
+            const mission = game.missions[game.currentMission];
+            if (mission.angleMin && (angle < mission.angleMin || angle > mission.angleMax)) {
+                addTrajectoryAnalysis(`❌ Ángulo fuera del rango permitido (${mission.angleMin}°-${mission.angleMax}°)`);
+                return;
+            }
+            
+            if (mission.maxShots && game.shots >= mission.maxShots) {
+                addTrajectoryAnalysis(`❌ Has alcanzado el límite de disparos (${mission.maxShots})`);
+                return;
+            }
+            
+            const angleRad = (angle * Math.PI) / 180;
+            const velocity = power * 0.4;
+            const gravity = game.physicsData.gravity * 0.02;
+            
             const projectile = {
-                x: cannonGame.cannonX + Math.cos(angleRad) * 40,
-                y: cannonGame.cannonY - Math.sin(angleRad) * 40,
+                x: game.cannonX + Math.cos(angleRad) * 40,
+                y: game.cannonY - Math.sin(angleRad) * 40,
                 vx: Math.cos(angleRad) * velocity,
                 vy: -Math.sin(angleRad) * velocity,
-                gravity: 0.2,
+                gravity: gravity,
                 trail: [],
-                fullTrajectory: [] // Nueva: trayectoria completa para el historial
+                startTime: Date.now(),
+                angle: angle,
+                initialPower: power
             };
 
-            cannonGame.projectiles.push(projectile);
-
-            // Incrementar contador de disparos
-            cannonGame.shots++;
+            game.projectiles.push(projectile);
+            game.shots++;
             
-            // Efecto de disparo con partículas
             createMuzzleFlash(angleRad);
-            
             updateStats();
         }
 
         // Crear flash del cañón
         function createMuzzleFlash(angle) {
-            for (let i = 0; i < 15; i++) {
-                cannonGame.particles.push({
-                    x: cannonGame.cannonX + Math.cos(angle) * 40,
-                    y: cannonGame.cannonY - Math.sin(angle) * 40,
-                    vx: Math.cos(angle + (Math.random() - 0.5) * 0.8) * (3 + Math.random() * 6),
-                    vy: -Math.sin(angle + (Math.random() - 0.5) * 0.8) * (3 + Math.random() * 6),
-                    life: 25,
-                    maxLife: 25,
+            for (let i = 0; i < 10; i++) {
+                game.particles.push({
+                    x: game.cannonX + Math.cos(angle) * 40,
+                    y: game.cannonY - Math.sin(angle) * 40,
+                    vx: Math.cos(angle + (Math.random() - 0.5) * 0.5) * (2 + Math.random() * 4),
+                    vy: -Math.sin(angle + (Math.random() - 0.5) * 0.5) * (2 + Math.random() * 4),
+                    life: 20,
+                    maxLife: 20,
                     color: Math.random() > 0.5 ? '#FFD700' : '#FF4500'
                 });
             }
         }
 
         // Crear explosión
-        function createExplosion(x, y, size = 50) {
-            cannonGame.explosions.push({
+        function createExplosion(x, y, size = 40) {
+            game.explosions.push({
                 x: x,
                 y: y,
                 radius: 0,
                 maxRadius: size,
                 alpha: 1,
-                life: 40
+                life: 30
             });
             
-            // Partículas de explosión
-            for (let i = 0; i < 25; i++) {
-                cannonGame.particles.push({
+            for (let i = 0; i < 15; i++) {
+                game.particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 12,
-                    vy: (Math.random() - 0.5) * 12,
-                    life: 35,
-                    maxLife: 35,
-                    color: ['#FFD700', '#FF4500', '#FF6B35', '#8B0000'][Math.floor(Math.random() * 4)]
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    life: 25,
+                    maxLife: 25,
+                    color: ['#FFD700', '#FF4500', '#FF6B35'][Math.floor(Math.random() * 3)]
                 });
+            }
+        }
+
+        // Agregar análisis de trayectoria
+        function addTrajectoryAnalysis(text) {
+            const analysisDiv = document.getElementById('trajectoryAnalysis');
+            const item = document.createElement('div');
+            item.className = 'analysis-item';
+            item.textContent = text;
+            
+            analysisDiv.insertBefore(item, analysisDiv.firstChild);
+            
+            // Mantener solo los últimos 10 análisis
+            while (analysisDiv.children.length > 10) {
+                analysisDiv.removeChild(analysisDiv.lastChild);
+            }
+        }
+
+        // Actualizar misión
+        function updateMissionDisplay() {
+            const mission = game.missions[game.currentMission];
+            const missionDiv = document.getElementById('currentMission');
+            
+            missionDiv.innerHTML = `
+                <strong>${mission.type.toUpperCase()}:</strong><br>
+                ${mission.description}<br>
+                <small>Recompensa: ${mission.reward} puntos</small>
+            `;
+        }
+
+        // Siguiente misión
+        function nextMission() {
+            if (game.currentMission < game.missions.length - 1) {
+                game.currentMission++;
+                updateMissionDisplay();
+                resetGame();
+            } else {
+                addTrajectoryAnalysis('🎉 ¡Has completado todas las misiones!');
             }
         }
 
         // Bucle principal de animación
-        function animateCannon() {
-            cannonGame.ctx.clearRect(0, 0, cannonGame.canvas.width, cannonGame.canvas.height);
+        function animate() {
+            game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
             
-            // Dibujar fondo con degradado
-            const gradient = cannonGame.ctx.createLinearGradient(0, 0, 0, cannonGame.canvas.height);
+            // Fondo con degradado
+            const gradient = game.ctx.createLinearGradient(0, 0, 0, game.canvas.height);
             gradient.addColorStop(0, '#87CEEB');
             gradient.addColorStop(0.7, '#98FB98');
             gradient.addColorStop(1, '#8FBC8F');
-            cannonGame.ctx.fillStyle = gradient;
-            cannonGame.ctx.fillRect(0, 0, cannonGame.canvas.width, cannonGame.canvas.height);
+            game.ctx.fillStyle = gradient;
+            game.ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
             
-            // Dibujar suelo
-            cannonGame.ctx.fillStyle = '#8B4513';
-            cannonGame.ctx.fillRect(0, 380, cannonGame.canvas.width, 20);
+            // Suelo
+            game.ctx.fillStyle = '#8B4513';
+            game.ctx.fillRect(0, 380, game.canvas.width, 20);
             
-            // Dibujar hierba
-            cannonGame.ctx.fillStyle = '#228B22';
-            cannonGame.ctx.fillRect(0, 370, cannonGame.canvas.width, 10);
+            // Dibujar trayectoria predicha
+            drawTrajectoryPrediction();
             
-            // Dibujar trayectorias históricas
-            drawTrajectoryHistory();
-            
-            // Dibujar predicción de trayectoria
-            if (cannonGame.showPrediction) {
-                drawTrajectoryPrediction();
-            }
-            
-            // Dibujar cañón
+            // Dibujar elementos del juego
             drawCannon();
-            
-            // Dibujar blancos
             drawTargets();
-            
-            // Actualizar y dibujar proyectiles
             updateProjectiles();
-            
-            // Actualizar y dibujar explosiones
             updateExplosions();
-            
-            // Actualizar y dibujar partículas
             updateParticles();
             
-            cannonGame.animationId = requestAnimationFrame(animateCannon);
+            requestAnimationFrame(animate);
         }
 
-        // Dibujar historial de trayectorias
-        function drawTrajectoryHistory() {
-            cannonGame.trajectoryHistory.forEach((trajectory, index) => {
-                if (trajectory.length > 1) {
-                    const alpha = Math.max(0.2, 1 - (index / cannonGame.trajectoryHistory.length) * 0.8);
-                    cannonGame.ctx.strokeStyle = `rgba(255, 165, 0, ${alpha})`;
-                    cannonGame.ctx.lineWidth = 2;
-                    cannonGame.ctx.setLineDash([5, 5]);
-                    cannonGame.ctx.beginPath();
-                    trajectory.forEach((point, pointIndex) => {
-                        if (pointIndex === 0) {
-                            cannonGame.ctx.moveTo(point.x, point.y);
-                        } else {
-                            cannonGame.ctx.lineTo(point.x, point.y);
-                        }
-                    });
-                    cannonGame.ctx.stroke();
-                    cannonGame.ctx.setLineDash([]);
-                }
-            });
-        }
-
-        // Dibujar predicción de trayectoria
+        // Dibujar trayectoria predicha
         function drawTrajectoryPrediction() {
-            if (cannonGame.predictedTrajectory.length > 1) {
-                cannonGame.ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-                cannonGame.ctx.lineWidth = 3;
-                cannonGame.ctx.setLineDash([10, 10]);
-                cannonGame.ctx.beginPath();
-                cannonGame.predictedTrajectory.forEach((point, index) => {
+            if (game.predictedTrajectory.length > 1) {
+                game.ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                game.ctx.lineWidth = 2;
+                game.ctx.setLineDash([5, 5]);
+                game.ctx.beginPath();
+                game.predictedTrajectory.forEach((point, index) => {
                     if (index === 0) {
-                        cannonGame.ctx.moveTo(point.x, point.y);
+                        game.ctx.moveTo(point.x, point.y);
                     } else {
-                        cannonGame.ctx.lineTo(point.x, point.y);
+                        game.ctx.lineTo(point.x, point.y);
                     }
                 });
-                cannonGame.ctx.stroke();
-                cannonGame.ctx.setLineDash([]);
-
-                // Dibujar puntos de impacto predichos
-                cannonGame.ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
-                const lastPoint = cannonGame.predictedTrajectory[cannonGame.predictedTrajectory.length - 1];
-                cannonGame.ctx.beginPath();
-                cannonGame.ctx.arc(lastPoint.x, lastPoint.y, 8, 0, Math.PI * 2);
-                cannonGame.ctx.fill();
+                game.ctx.stroke();
+                game.ctx.setLineDash([]);
             }
         }
 
         // Dibujar cañón
         function drawCannon() {
-            const angle = document.getElementById('cannonAngle').value;
+            const angle = parseFloat(document.getElementById('cannonAngle').value);
             const angleRad = -(angle * Math.PI) / 180;
             
-            cannonGame.ctx.save();
-            
-            // Sombra del cañón
-            cannonGame.ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX + 3, cannonGame.cannonY + 3, 25, 0, Math.PI * 2);
-            cannonGame.ctx.fill();
+            game.ctx.save();
             
             // Base del cañón
-            cannonGame.ctx.fillStyle = '#2c3e50';
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX, cannonGame.cannonY, 25, 0, Math.PI * 2);
-            cannonGame.ctx.fill();
+            game.ctx.fillStyle = '#2c3e50';
+            game.ctx.beginPath();
+            game.ctx.arc(game.cannonX, game.cannonY, 20, 0, Math.PI * 2);
+            game.ctx.fill();
             
-            // Barril del cañón
-            cannonGame.ctx.translate(cannonGame.cannonX, cannonGame.cannonY);
-            cannonGame.ctx.rotate(angleRad);
+            // Barril
+            game.ctx.translate(game.cannonX, game.cannonY);
+            game.ctx.rotate(angleRad);
+            game.ctx.fillStyle = '#34495e';
+            game.ctx.fillRect(0, -6, 35, 12);
             
-            cannonGame.ctx.fillStyle = '#34495e';
-            cannonGame.ctx.fillRect(0, -8, 40, 16);
-            
-            // Punta del barril
-            cannonGame.ctx.fillStyle = '#2c3e50';
-            cannonGame.ctx.fillRect(35, -10, 8, 20);
-            
-            cannonGame.ctx.restore();
-            
-            // Ruedas del cañón
-            cannonGame.ctx.fillStyle = '#7f8c8d';
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX - 20, cannonGame.cannonY + 20, 12, 0, Math.PI * 2);
-            cannonGame.ctx.fill();
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX + 20, cannonGame.cannonY + 20, 12, 0, Math.PI * 2);
-            cannonGame.ctx.fill();
-            
-            // Detalles de las ruedas
-            cannonGame.ctx.strokeStyle = '#5d6d7e';
-            cannonGame.ctx.lineWidth = 2;
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX - 20, cannonGame.cannonY + 20, 8, 0, Math.PI * 2);
-            cannonGame.ctx.stroke();
-            cannonGame.ctx.beginPath();
-            cannonGame.ctx.arc(cannonGame.cannonX + 20, cannonGame.cannonY + 20, 8, 0, Math.PI * 2);
-            cannonGame.ctx.stroke();
+            game.ctx.restore();
         }
 
         // Dibujar blancos
         function drawTargets() {
-            cannonGame.targets.forEach(target => {
+            game.targets.forEach(target => {
                 if (!target.destroyed) {
-                    // Sombra del blanco
-                    cannonGame.ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                    cannonGame.ctx.fillRect(target.x + 3, target.y + target.height + 3, target.width, 8);
+                    game.ctx.fillStyle = '#e74c3c';
+                    game.ctx.fillRect(target.x, target.y, target.width, target.height);
                     
-                    // Blanco principal
-                    cannonGame.ctx.fillStyle = '#e74c3c';
-                    cannonGame.ctx.fillRect(target.x, target.y, target.width, target.height);
+                    game.ctx.strokeStyle = '#c0392b';
+                    game.ctx.lineWidth = 2;
+                    game.ctx.strokeRect(target.x, target.y, target.width, target.height);
                     
-                    // Borde del blanco
-                    cannonGame.ctx.strokeStyle = '#c0392b';
-                    cannonGame.ctx.lineWidth = 3;
-                    cannonGame.ctx.strokeRect(target.x, target.y, target.width, target.height);
-                    
-                    // Diana central
-                    cannonGame.ctx.fillStyle = 'white';
-                    cannonGame.ctx.beginPath();
-                    cannonGame.ctx.arc(target.x + target.width/2, target.y + target.height/2, Math.min(target.width, target.height)/4, 0, Math.PI * 2);
-                    cannonGame.ctx.fill();
-                    
-                    cannonGame.ctx.fillStyle = '#c0392b';
-                    cannonGame.ctx.beginPath();
-                    cannonGame.ctx.arc(target.x + target.width/2, target.y + target.height/2, Math.min(target.width, target.height)/6, 0, Math.PI * 2);
-                    cannonGame.ctx.fill();
+                    // Mostrar valor del blanco
+                    game.ctx.fillStyle = 'white';
+                    game.ctx.font = '12px Arial';
+                    game.ctx.textAlign = 'center';
+                    game.ctx.fillText(target.value, target.x + target.width/2, target.y + target.height/2 + 4);
                 }
             });
         }
 
         // Actualizar proyectiles
         function updateProjectiles() {
-            cannonGame.projectiles = cannonGame.projectiles.filter(projectile => {
-                // Actualizar posición
+            game.projectiles = game.projectiles.filter(projectile => {
                 projectile.x += projectile.vx;
                 projectile.y += projectile.vy;
                 projectile.vy += projectile.gravity;
                 
-                // Agregar punto al rastro y trayectoria completa
                 projectile.trail.push({x: projectile.x, y: projectile.y});
-                projectile.fullTrajectory.push({x: projectile.x, y: projectile.y});
-                
-                if (projectile.trail.length > 20) {
+                if (projectile.trail.length > 15) {
                     projectile.trail.shift();
                 }
                 
-                // Dibujar rastro mejorado
+                // Dibujar rastro
                 if (projectile.trail.length > 1) {
-                    cannonGame.ctx.lineWidth = 6;
-                    cannonGame.ctx.lineCap = 'round';
-                    
-                    // Rastro con degradado
-                    for (let i = 1; i < projectile.trail.length; i++) {
-                        const alpha = i / projectile.trail.length;
-                        cannonGame.ctx.strokeStyle = `rgba(255, 215, 0, ${alpha * 0.8})`;
-                        cannonGame.ctx.lineWidth = 4 * alpha;
-                        cannonGame.ctx.beginPath();
-                        cannonGame.ctx.moveTo(projectile.trail[i-1].x, projectile.trail[i-1].y);
-                        cannonGame.ctx.lineTo(projectile.trail[i].x, projectile.trail[i].y);
-                        cannonGame.ctx.stroke();
-                    }
+                    game.ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+                    game.ctx.lineWidth = 3;
+                    game.ctx.beginPath();
+                    projectile.trail.forEach((point, index) => {
+                        if (index === 0) {
+                            game.ctx.moveTo(point.x, point.y);
+                        } else {
+                            game.ctx.lineTo(point.x, point.y);
+                        }
+                    });
+                    game.ctx.stroke();
                 }
                 
-                // Dibujar proyectil con efectos mejorados
-                cannonGame.ctx.save();
-                cannonGame.ctx.shadowColor = '#f39c12';
-                cannonGame.ctx.shadowBlur = 10;
-                cannonGame.ctx.fillStyle = '#f39c12';
-                cannonGame.ctx.beginPath();
-                cannonGame.ctx.arc(projectile.x, projectile.y, 8, 0, Math.PI * 2);
-                cannonGame.ctx.fill();
+                // Dibujar proyectil
+                game.ctx.fillStyle = '#f39c12';
+                game.ctx.beginPath();
+                game.ctx.arc(projectile.x, projectile.y, 6, 0, Math.PI * 2);
+                game.ctx.fill();
                 
-                // Brillo del proyectil
-                cannonGame.ctx.fillStyle = '#f1c40f';
-                cannonGame.ctx.beginPath();
-                cannonGame.ctx.arc(projectile.x - 3, projectile.y - 3, 4, 0, Math.PI * 2);
-                cannonGame.ctx.fill();
-                cannonGame.ctx.restore();
-                
-                // Comprobar colisión con blancos
+                // Verificar colisiones con blancos
                 let hit = false;
-                cannonGame.targets.forEach(target => {
+                game.targets.forEach((target, index) => {
                     if (!target.destroyed &&
                         projectile.x >= target.x && projectile.x <= target.x + target.width &&
                         projectile.y >= target.y && projectile.y <= target.y + target.height) {
                         
                         target.destroyed = true;
-                        cannonGame.score++;
-                        createExplosion(target.x + target.width/2, target.y + target.height/2, 60);
+                        game.score += target.value;
+                        hit = true;
                         
-                        // Agregar trayectoria al historial
-                        cannonGame.trajectoryHistory.push([...projectile.fullTrajectory]);
+                        createExplosion(target.x + target.width/2, target.y + target.height/2, 50);
+                        
+                        // Análisis del tiro exitoso
+                        const flightTime = (Date.now() - projectile.startTime) / 1000;
+                        addTrajectoryAnalysis(`🎯 ¡Blanco destruido! +${target.value} pts (${flightTime.toFixed(1)}s, ${projectile.angle}°)`);
                         
                         updateStats();
-                        checkGameComplete();
-                        hit = true;
+                        checkMissionComplete();
                     }
                 });
                 
-                // Eliminar si toca el suelo o sale de pantalla
-                if (projectile.y >= 380 || projectile.x > cannonGame.canvas.width || projectile.x < 0 || hit) {
+                // Eliminar proyectil si toca el suelo o sale de pantalla
+                if (projectile.y >= 380 || projectile.x > game.canvas.width || projectile.x < 0 || hit) {
                     if (projectile.y >= 380 && !hit) {
-                        createExplosion(projectile.x, 380, 30);
-                        // Agregar trayectoria fallida al historial
-                        cannonGame.trajectoryHistory.push([...projectile.fullTrajectory]);
+                        createExplosion(projectile.x, 380, 25);
+                        addTrajectoryAnalysis(`💥 Impacto en el suelo (${projectile.angle}°, velocidad: ${projectile.initialPower})`);
                     }
                     return false;
                 }
@@ -806,26 +813,25 @@
 
         // Actualizar explosiones
         function updateExplosions() {
-            cannonGame.explosions = cannonGame.explosions.filter(explosion => {
+            game.explosions = game.explosions.filter(explosion => {
                 explosion.life--;
-                explosion.radius = (1 - explosion.life / 40) * explosion.maxRadius;
-                explosion.alpha = explosion.life / 40;
+                explosion.radius = (1 - explosion.life / 30) * explosion.maxRadius;
+                explosion.alpha = explosion.life / 30;
                 
                 if (explosion.alpha > 0) {
-                    // Crear gradiente radial para la explosión
-                    const gradient = cannonGame.ctx.createRadialGradient(
+                    const gradient = game.ctx.createRadialGradient(
                         explosion.x, explosion.y, 0,
                         explosion.x, explosion.y, explosion.radius
                     );
                     gradient.addColorStop(0, `rgba(255, 255, 255, ${explosion.alpha})`);
-                    gradient.addColorStop(0.3, `rgba(255, 215, 0, ${explosion.alpha * 0.8})`);
-                    gradient.addColorStop(0.6, `rgba(255, 69, 0, ${explosion.alpha * 0.6})`);
-                    gradient.addColorStop(1, `rgba(139, 0, 0, ${explosion.alpha * 0.2})`);
+                    gradient.addColorStop(0.4, `rgba(255, 215, 0, ${explosion.alpha * 0.8})`);
+                    gradient.addColorStop(0.8, `rgba(255, 69, 0, ${explosion.alpha * 0.6})`);
+                    gradient.addColorStop(1, `rgba(139, 0, 0, ${explosion.alpha * 0.3})`);
                     
-                    cannonGame.ctx.fillStyle = gradient;
-                    cannonGame.ctx.beginPath();
-                    cannonGame.ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
-                    cannonGame.ctx.fill();
+                    game.ctx.fillStyle = gradient;
+                    game.ctx.beginPath();
+                    game.ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+                    game.ctx.fill();
                     
                     return true;
                 }
@@ -835,20 +841,20 @@
 
         // Actualizar partículas
         function updateParticles() {
-            cannonGame.particles = cannonGame.particles.filter(particle => {
+            game.particles = game.particles.filter(particle => {
                 particle.life--;
                 particle.x += particle.vx;
                 particle.y += particle.vy;
-                particle.vy += 0.1; // Gravedad ligera
+                particle.vy += 0.1;
                 
                 const alpha = particle.life / particle.maxLife;
                 if (alpha > 0) {
-                    cannonGame.ctx.fillStyle = particle.color;
-                    cannonGame.ctx.globalAlpha = alpha;
-                    cannonGame.ctx.beginPath();
-                    cannonGame.ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
-                    cannonGame.ctx.fill();
-                    cannonGame.ctx.globalAlpha = 1;
+                    game.ctx.fillStyle = particle.color;
+                    game.ctx.globalAlpha = alpha;
+                    game.ctx.beginPath();
+                    game.ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+                    game.ctx.fill();
+                    game.ctx.globalAlpha = 1;
                     
                     return true;
                 }
@@ -856,82 +862,104 @@
             });
         }
 
-        // Actualizar estadísticas
-        function updateStats() {
-            document.getElementById('cannonScore').textContent = cannonGame.score;
-            document.getElementById('shotsCount').textContent = cannonGame.shots;
+        // Verificar si la misión está completa
+        function checkMissionComplete() {
+            const mission = game.missions[game.currentMission];
+            const targetsDestroyed = game.targets.filter(t => t.destroyed).length;
             
-            const accuracy = cannonGame.shots > 0 ? Math.round((cannonGame.score / cannonGame.shots) * 100) : 0;
-            document.getElementById('accuracy').textContent = accuracy + '%';
+            let completed = false;
             
-            const remainingTargets = cannonGame.targets.filter(target => !target.destroyed).length;
-            document.getElementById('targetsLeft').textContent = remainingTargets;
-        }
-
-        // Verificar si el juego está completo
-        function checkGameComplete() {
-            const remainingTargets = cannonGame.targets.filter(target => !target.destroyed).length;
-            if (remainingTargets === 0) {
+            switch(mission.type) {
+                case 'tutorial':
+                    completed = targetsDestroyed >= mission.target;
+                    break;
+                case 'precision':
+                    completed = targetsDestroyed >= mission.target && game.shots <= mission.maxShots;
+                    break;
+                case 'physics':
+                    completed = targetsDestroyed >= mission.target;
+                    break;
+                case 'efficiency':
+                    completed = targetsDestroyed >= mission.target;
+                    break;
+                case 'experiment':
+                    completed = targetsDestroyed >= mission.target;
+                    break;
+            }
+            
+            if (completed) {
+                game.score += mission.reward;
+                addTrajectoryAnalysis(`🌟 ¡Misión completada! +${mission.reward} puntos bonus`);
+                
                 setTimeout(() => {
-                    showGameOver();
-                }, 1000);
+                    if (game.currentMission < game.missions.length - 1) {
+                        game.currentMission++;
+                        updateMissionDisplay();
+                        levelUp();
+                    } else {
+                        addTrajectoryAnalysis('🏆 ¡Felicidades! Has completado todas las misiones');
+                    }
+                }, 1500);
             }
         }
 
-        // Mostrar pantalla de victoria
-        function showGameOver() {
-            document.getElementById('finalShots').textContent = cannonGame.shots;
-            document.getElementById('finalAccuracy').textContent = 
-                cannonGame.shots > 0 ? Math.round((cannonGame.score / cannonGame.shots) * 100) + '%' : '0%';
-            document.getElementById('gameOver').style.display = 'flex';
+        // Subir de nivel
+        function levelUp() {
+            game.level++;
+            addTrajectoryAnalysis(`🔥 ¡Nivel ${game.level}! Nuevos desafíos te esperan`);
+            createTargets();
+            resetStats(false); // No resetear puntuación total
         }
 
-        // Cerrar pantalla de victoria
-        function closeGameOver() {
-            document.getElementById('gameOver').style.display = 'none';
-            resetCannon();
-        }
-
-        // Reiniciar juego
-        function resetCannon() {
-            if (cannonGame.animationId) {
-                cancelAnimationFrame(cannonGame.animationId);
+        // Resetear estadísticas
+        function resetStats(resetScore = true) {
+            if (resetScore) {
+                game.score = 0;
+                game.level = 1;
             }
-            initCannon();
+            game.shots = 0;
+            game.projectiles = [];
+            game.explosions = [];
+            game.particles = [];
+            updateStats();
         }
 
-        // Inicializar cuando la página cargue
-        window.addEventListener('load', () => {
-            initCannon();
-        });
+        // Actualizar estadísticas en pantalla
+        function updateStats() {
+            document.getElementById('score').textContent = game.score;
+            document.getElementById('shots').textContent = game.shots;
+            document.getElementById('level').textContent = game.level;
+            
+            const targetsDestroyed = game.targets.filter(t => t.destroyed).length;
+            const accuracy = game.shots > 0 ? Math.round((targetsDestroyed / game.shots) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
 
-        // Manejar redimensionado de ventana
-        window.addEventListener('resize', () => {
-            // Reajustar canvas si es necesario
-            const canvas = cannonGame.canvas;
-            if (canvas && window.innerWidth < 800) {
-                canvas.style.width = '100%';
-                canvas.style.height = 'auto';
-            }
-        });
+        // Resetear juego
+        function resetGame() {
+            createTargets();
+            resetStats();
+            document.getElementById('trajectoryAnalysis').innerHTML = 
+                '<div style="text-align: center; color: #666; font-style: italic;">Los análisis de tus disparos aparecerán aquí</div>';
+        }
 
-        // Controles de teclado para mayor interactividad
+        // Controles de teclado
         document.addEventListener('keydown', (event) => {
             switch(event.key) {
                 case 'ArrowUp':
-                    adjustAngle(1);
+                    adjustControl('cannonAngle', 1);
                     event.preventDefault();
                     break;
                 case 'ArrowDown':
-                    adjustAngle(-1);
+                    adjustControl('cannonAngle', -1);
                     event.preventDefault();
                     break;
                 case 'ArrowLeft':
-                    adjustPower(-2);
+                    adjustControl('cannonPower', -2);
                     event.preventDefault();
                     break;
                 case 'ArrowRight':
-                    adjustPower(2);
+                    adjustControl('cannonPower', 2);
                     event.preventDefault();
                     break;
                 case ' ':
@@ -940,19 +968,83 @@
                     break;
                 case 'r':
                 case 'R':
-                    resetCannon();
+                    resetGame();
                     event.preventDefault();
                     break;
-                case 'p':
-                case 'P':
-                    toggleTrajectoryPrediction();
+                case '1':
+                    setGameModeByIndex(0);
                     event.preventDefault();
                     break;
-                case 'c':
-                case 'C':
-                    clearTrajectories();
+                case '2':
+                    setGameModeByIndex(1);
                     event.preventDefault();
                     break;
+                case '3':
+                    setGameModeByIndex(2);
+                    event.preventDefault();
+                    break;
+                case '4':
+                    setGameModeByIndex(3);
+                    event.preventDefault();
+                    break;
+            }
+        });
+
+        // Ajustar control por teclado
+        function adjustControl(controlId, change) {
+            const control = document.getElementById(controlId);
+            let newValue = parseInt(control.value) + change;
+            newValue = Math.max(parseInt(control.min), Math.min(parseInt(control.max), newValue));
+            control.value = newValue;
+            control.oninput();
+        }
+
+        // Establecer modo de juego por índice
+        function setGameModeByIndex(index) {
+            const modes = ['tutorial', 'practice', 'challenge', 'experiment'];
+            if (modes[index]) {
+                const buttons = document.querySelectorAll('.mode-button');
+                buttons[index].click();
+            }
+        }
+
+        // Agregar consejos educativos
+        function addPhysicsTip() {
+            const tips = [
+                "💡 El ángulo de 45° maximiza el alcance en condiciones ideales",
+                "🔬 La componente horizontal de velocidad permanece constante (sin resistencia del aire)",
+                "📐 Dos ángulos diferentes pueden dar el mismo alcance: α y (90°-α)",
+                "⚡ La energía cinética se convierte en potencial en el punto más alto",
+                "🌍 En la Luna (g=1.6 m/s²) los proyectiles vuelan mucho más lejos",
+                "📊 El tiempo de vuelo depende solo de la componente vertical de velocidad"
+            ];
+            
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            addTrajectoryAnalysis(randomTip);
+        }
+
+        // Agregar tips periódicamente
+        setInterval(addPhysicsTip, 30000); // Cada 30 segundos
+
+        // Inicializar el juego cuando cargue la página
+        window.addEventListener('load', () => {
+            initGame();
+            updateControls();
+            calculateTrajectoryPrediction();
+            
+            // Mensaje de bienvenida
+            setTimeout(() => {
+                addTrajectoryAnalysis("🚀 ¡Bienvenido al Simulador de Física!");
+                addTrajectoryAnalysis("⌨️ Usa las flechas del teclado para controlar, ESPACIO para disparar");
+            }, 1000);
+        });
+
+        // Manejar redimensionado responsive
+        window.addEventListener('resize', () => {
+            const canvas = game.canvas;
+            if (canvas && window.innerWidth < 900) {
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
             }
         });
     </script>
