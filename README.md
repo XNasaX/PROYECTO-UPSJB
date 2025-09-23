@@ -65,7 +65,7 @@ Un simulador interactivo de física que enseña los principios del tiro paraból
 
 ### Opción 2: Clonar Repositorio
 ```bash
-git clone https://github.com/tu-usuario/simulador-tiro-parabolico.git
+git clone https://xnasax.github.io/PROYECTO-UPSJB/
 cd simulador-tiro-parabolico
 ```
 
