@@ -204,18 +204,18 @@ El juego incluye un sistema de seguimiento que permite:
 
 ## 🔮 Roadmap - Próximas Características
 
-### Versión 2.0 (HTML5 Mejorado)
+### Versión 0.20.1 (HTML5 Mejorado)
 - [ ] Blancos móviles
 - [ ] Efectos de viento
 - [ ] Obstáculos en el terreno
 - [ ] Multijugador local
 - [ ] Guardado de progreso
 
-### Versión 3.0 (Unity)
+### Versión 0.1.0 (Unity)
 - [ ] Gráficos 3D
 - [ ] Física avanzada (resistencia del aire)
 - [ ] Diferentes planetas/gravedades
-- [ ] Realidad virtual (VR)
+- [ ] Realidad virtual (VR) - IDEA SIN EJECUTAR
 - [ ] Simulación de múltiples proyectiles
 
 ## 📄 Licencia
