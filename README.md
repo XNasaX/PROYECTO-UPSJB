@@ -10,14 +10,11 @@ El proyecto **Tiro Parabólico** simula el movimiento de un proyectil bajo la in
 - 🎨 **Visualización gráfica** de la trayectoria.
 
 ## Tecnologías Usadas 🛠️
-- **Python**
-- **Matplotlib** para gráficos.
-- **Numpy** para cálculos matemáticos.
+- **HTML**
 
 ## Instalación 🔧
 Para instalar el proyecto y ejecutarlo en tu entorno local, sigue estos pasos:
 
 ```bash
 git clone https://github.com/tu_usuario/PROYECTO-UPSJB.git
-cd PROYECTO-UPSJB
-pip install -r requirements.txt
+O descarga simplemente el "index.html"
