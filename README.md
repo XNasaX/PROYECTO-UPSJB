@@ -70,7 +70,7 @@ cd simulador-tiro-parabolico
 ```
 
 ### Opción 3: GitHub Pages
-Visita la versión en vivo: [https://tu-usuario.github.io/simulador-tiro-parabolico](https://tu-usuario.github.io/simulador-tiro-parabolico)
+Visita la versión en vivo: [https://tu-usuario.github.io/simulador-tiro-parabolico](https://xnasax.github.io/PROYECTO-UPSJB/)
 
 ## 🎯 Objetivos Educativos
 
@@ -225,7 +225,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ```
 MIT License
 
-Copyright (c) 2025 [Tu Nombre]
+Copyright (c) 2025 [DIBUJITOS DESING]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -248,10 +248,9 @@ SOFTWARE.
 
 ## 👨‍💻 DIBUJITOS DESING
 
-**[Tu Nombre]**
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- Email: tu-email@ejemplo.com
-- LinkedIn: [Tu LinkedIn](https://linkedin.com/in/tu-perfil)
+**[DIBUJITOS DESING]**
+- GitHub: [@XNasaX](https://github.com/XNasaX)
+- Email: naza.dr.off@gmail.com
 
 ## 🙏 Agradecimientos
 
@@ -259,7 +258,7 @@ SOFTWARE.
 - Gracias a la comunidad educativa por el feedback
 - Agradecimiento especial a profesores de física que validaron el contenido
 - Canvas HTML5 y las tecnologías web que hacen esto posible
-- PROFE DE CALCULO I LOVE YOU FOR ORIUNDO
+- PROFE DE CALCULO - I LOVE YOU FOR ORIUNDO
 
 ## ⭐ ¡Apoya el Proyecto!
 
@@ -274,7 +273,7 @@ Si te gusta este proyecto:
 
 <div align="center">
 
-**[🎯 JUGAR AHORA](https://tu-usuario.github.io/simulador-tiro-parabolico) | [📚 DOCUMENTACIÓN](docs/) | [🐛 REPORTAR BUG](https://github.com/tu-usuario/simulador-tiro-parabolico/issues)**
+**[🎯 JUGAR AHORA](https://xnasax.github.io/PROYECTO-UPSJB/) | [📚 DOCUMENTACIÓN](docs/) | [🐛 REPORTAR BUG](https://github.com/tu-usuario/simulador-tiro-parabolico/issues)**
 
 *"La física es divertida cuando puedes experimentar con ella interactivamente"*
 
